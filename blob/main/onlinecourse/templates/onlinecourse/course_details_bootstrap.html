@@ -1,0 +1,44 @@
+{% extends 'onlinecourse/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ course.name }}</h2>
+    <p>{{ course.description }}</p>
+
+    <h4 class="mt-4">Lessons</h4>
+    {% for lesson in course.lesson_set.all %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ lesson.title }}</h5>
+                <p class="card-text">{{ lesson.content }}</p>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+        <a class="btn btn-primary my-3" data-toggle="collapse" href="#examSection" role="button">Start Exam</a>
+        <div class="collapse" id="examSection">
+            <form action="{% url 'onlinecourse:submit' course.id %}" method="post">
+                {% csrf_token %}
+                {% for lesson in course.lesson_set.all %}
+                    {% for question in lesson.question_set.all %}
+                        <div class="card my-2">
+                            <div class="card-header font-weight-bold">{{ question.question_text }}</div>
+                            <div class="card-body">
+                                {% for choice in question.choice_set.all %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="choice" value="{{ choice.id }}" id="choice_{{ choice.id }}">
+                                        <label class="form-check-label" for="choice_{{ choice.id }}">
+                                            {{ choice.choice_text }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+                <button type="submit" class="btn btn-success mt-2">Submit Exam</button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
