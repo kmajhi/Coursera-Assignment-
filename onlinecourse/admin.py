@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import Course, Lesson, Instructor, Learner, Question, Choice, Submission
 
-
 class ChoiceInline(admin.StackedInline):
     model = Choice
     extra = 4
